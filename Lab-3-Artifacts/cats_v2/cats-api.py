@@ -6,13 +6,13 @@ app = Flask(__name__)
 
 @app.route('/cats/api/delete-pictures/<int:pic_by_number>', methods=['POST'])
 def remove_picture(pic_by_number):
-    file_to_remove = str(pic_by_number)+".jpg"
+    file_to_remove = f"{str(pic_by_number)}.jpg"
     try:
         os.remove(file_to_remove)
-        return ("Successfully deleted image %s" % pic_by_number)
+        return f"Successfully deleted image {pic_by_number}"
     except OSError:
         pass
-    return ("No such image as %s.jpg" % pic_by_number)
+    return f"No such image as {pic_by_number}.jpg"
 
 
 @app.route('/cats/api/list-pictures/', methods=['GET'])
@@ -20,19 +20,22 @@ def which_pictures():
 
     remaining_files = {}
     for file_number in range(1,11):
-        file_name = str(file_number) + ".jpg"
+        file_name = f"{str(file_number)}.jpg"
         if os.path.exists(file_name):
             remaining_files[file_name] = "true"
-    response = app.response_class(response=json.dumps(remaining_files), status=200, mimetype='application/json')
-    return response
+    return app.response_class(
+        response=json.dumps(remaining_files),
+        status=200,
+        mimetype='application/json',
+    )
 
 
 @app.route('/cats/api/reset-pictures/', methods=['GET', 'POST'])
 def reset_pictures():
 
     for file_number in range(1,11):
-        source_file= "./backup-images/" + str(file_number) + ".jpg"
-        dest_file= "./" + str(file_number) + ".jpg"
+        source_file = f"./backup-images/{str(file_number)}.jpg"
+        dest_file = f"./{str(file_number)}.jpg"
         copyfile(source_file, dest_file)
 
     return "Great Success!"
